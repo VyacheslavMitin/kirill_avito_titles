@@ -1,13 +1,12 @@
 # Модуль чтения списка
-from pprint import pprint
 
 
-def reading_spisok() -> list:
+def reading_lists(file) -> list:
     """Функция чтения файла с поисковыми запросами"""
 
     spisok = []
 
-    with open('spisok.txt', 'r') as file:
+    with open(f'{file}.txt', 'r', encoding="utf-8") as file:
         for line in file:
             spisok.append(line[:-1])
 
@@ -17,4 +16,8 @@ def reading_spisok() -> list:
 
 
 if __name__ == '__main__':
-    pprint(reading_spisok())
+    from pprint import pprint
+    print("Товары")
+    pprint(reading_lists('goods'))
+    print("\nГорода")
+    pprint(reading_lists('cities'))

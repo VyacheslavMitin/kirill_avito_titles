@@ -1,27 +1,33 @@
 import os
 import time
+from datetime import datetime
+
 from bs4 import BeautifulSoup as BS
 from selenium import webdriver
 
-from read_spisok import reading_spisok
+from read_files import reading_lists
 
 # Константы
-PATH_OUTPUT = 'output'  # путь к каталогу с получившимися файлами
+NOW_DATE_TIME = datetime.now().strftime('%d.%m.%Y_%H-%M-%S')
+
+# Переменные
+PATH_OUTPUT = f'output_{NOW_DATE_TIME}_'  # путь к каталогу с получившимися файлами
 
 
 # Функции
-def making_dir_output():
+def making_dir_output(path):
     """Функция создания каталогов для получающихся файлов"""
-    os.makedirs(PATH_OUTPUT, exist_ok=True)
+    os.makedirs(path, exist_ok=True)
 
 
-def parsing_titles(request):
+def parsing_titles(location, request):
     """Функция парсинга заголовков объявлений"""
 
-    making_dir_output()  # создание необходимых каталогов
+    path_output = PATH_OUTPUT + location
+    making_dir_output(path_output)  # создание необходимых каталогов
 
-    list = []
-    url = f"https://www.avito.ru/ulyanovsk?q={request}"
+    list_ = []
+    url = f"https://www.avito.ru/{location}?q={request}"
 
     driver = webdriver.Chrome(executable_path='chromedriver')
     driver.get(url)
@@ -37,17 +43,29 @@ def parsing_titles(request):
 
     for i in title_names:
         if i:
-            list.append(i.text.strip())
+            list_.append(i.text.strip())
 
-    list_set = set(list)
+    list_set = set(list_)
+    list_set = sorted(list_set)
 
-    for item in list_set:
-        with open(f'{PATH_OUTPUT}/{request}.txt', 'a') as file:
-            file.write(item)
+    print(f"Создание каталога с городом {location.upper()}")
+    for i in list_set:
+        with open(f'{path_output}/{request.title()}.txt', 'a', encoding="utf-8") as file:
+            file.write(i)
             file.write('\n')
     driver.close()
 
 
+def main():
+    """Основная функция"""
+    print(f"Скрипт сбора заголовков запущен {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}")
+
+    for city in reading_lists('cities'):
+        for good in reading_lists('goods'):
+            parsing_titles(city, good)
+
+    print(f"Завершено {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}")
+
+
 if __name__ == '__main__':
-    for item in reading_spisok():
-        parsing_titles(item)
+    main()
