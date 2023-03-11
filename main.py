@@ -48,7 +48,8 @@ def parsing_titles(location, request):
     list_set = set(list_)
     list_set = sorted(list_set)
 
-    print(f"Создание каталога с городом {location.upper()}")
+    print(f"~ {datetime.now().strftime('%d.%m.%Y || %H:%M:%S')} ~ Создание файла с городом '{location.upper()}' "
+          f"и поиском '{request.upper()}'")
     for i in list_set:
         with open(f'{path_output}/{request.title()}.txt', 'a', encoding="utf-8") as file:
             file.write(i)
@@ -58,13 +59,19 @@ def parsing_titles(location, request):
 
 def main():
     """Основная функция"""
-    print(f"Скрипт сбора заголовков запущен {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}")
+    start_time = datetime.now()
+
+    print(f"Скрипт сбора заголовков запущен {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}\n")
 
     for city in reading_lists('cities'):
         for good in reading_lists('goods'):
             parsing_titles(city, good)
 
-    print(f"Завершено {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}")
+    print(f"\nЗавершено {datetime.now().strftime('%d.%m.%Y %H:%M:%S')}\n")
+
+    finish_time = datetime.now() - start_time
+    finish_time = str(finish_time)[:-7]  # обрезание хвоста с мили секундами
+    print(f"Выполнено за {finish_time}")
 
 
 if __name__ == '__main__':
