@@ -30,6 +30,12 @@ def parsing_titles(location, request):
     url = f"https://www.avito.ru/{location}?q={request}"
 
     driver = webdriver.Chrome(executable_path='chromedriver')
+    options = webdriver.ChromeOptions()
+    options.add_argument('--ignore-certificate-errors-spki-list')
+    options.add_argument('--ignore-ssl-errors')
+    options.add_argument("log-level=3")
+    driver = webdriver.Chrome(options=options)
+
     driver.get(url)
     time.sleep(0)  # было 5, не помню зачем ждать 5 секунд, возможно для запуска хрома
 
