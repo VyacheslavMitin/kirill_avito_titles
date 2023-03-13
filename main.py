@@ -20,14 +20,15 @@ def making_dir_output(path):
     os.makedirs(path, exist_ok=True)
 
 
-def parsing_titles(location, request):
+def parsing_titles(location, request, page=1):
     """Функция парсинга заголовков объявлений"""
 
     path_output = PATH_OUTPUT + location
     making_dir_output(path_output)  # создание необходимых каталогов
 
     list_ = []
-    url = f"https://www.avito.ru/{location}?q={request}"
+    url = f"https://www.avito.ru/{location}?p={page}&q={request}"
+    # https://www.avito.ru/moskva?p=1&q=Кухня
 
     driver = webdriver.Chrome(executable_path='chromedriver')
     options = webdriver.ChromeOptions()
@@ -47,7 +48,21 @@ def parsing_titles(location, request):
     soup = BS(html, "html.parser")
     title_names = soup.find_all(itemprop="name")
 
+    driver.get(f"https://www.avito.ru/{location}?p=2&q={request}")
+
+    for i in range(20):  # 20 раз скроллим вниз страницу
+        driver.execute_script("window.scrollBy(0,1000)", "")
+        time.sleep(0)  # Было 1, можно 0.1, пауза между скроллами страницы, нужно если страница прогруж. при скроллинге
+
+    html = driver.page_source
+    soup = BS(html, "html.parser")
+    title_names2 = soup.find_all(itemprop="name")
+
     for i in title_names:
+        if i:
+            list_.append(i.text.strip())
+
+    for i in title_names2:
         if i:
             list_.append(i.text.strip())
 
